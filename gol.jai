@@ -122,13 +122,13 @@ sq_width := 35.0;
 
 render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #expand {
   // background.
-  clear_render_target(.05, .05, .05, 1);
+  clear_render_target(.35, .35, .35, 1);
   defer swap_buffers(win);
   width, height := get_render_dimensions(win);
   if mouse_pressed then {
     mouse_x, mouse_y := get_mouse_pointer_position(win, true);
-    i := cast(int) (mouse_x / sq_width);
-    j := cast(int) ((height - mouse_y) / sq_width);
+    i := (cast(int) (mouse_x / sq_width) + render_i) & (M-1);
+    j := (cast(int) ((height - mouse_y) / sq_width) + render_j) & (M-1);
     if i > 0 && i < M && j >= 0 && j < M then
       gol_grid[i][j] ^= 1;
   }
@@ -143,13 +143,17 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
   sq_y: float = xx height;
   fwidth: float = xx width;
   fheight: float = xx height;
+  offset := sq_width * 0.025;
+  dark := Vector4.{.15, .15, .15, 1};
   while sq_x < fwidth && cycles_x < M {
     sq_y = fheight;
     j = render_j;
     cycles_y := 0;
     while sq_y > 0 && cycles_y < M {
       if gol_grid[i][j] == 1 {
-        immediate_quad(sq_x, sq_y, sq_x + sq_width, sq_y - sq_width, color_theme);
+        immediate_quad(sq_x + offset, sq_y - offset, sq_x + sq_width - offset, sq_y - sq_width + offset, color_theme);
+      } else {
+        immediate_quad(sq_x + offset, sq_y - offset, sq_x + sq_width - offset, sq_y - sq_width + offset, dark);
       }
       sq_y -= sq_width;
       j = (j + 1) & (M-1);
