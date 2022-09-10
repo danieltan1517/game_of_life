@@ -129,7 +129,7 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
     mouse_x, mouse_y := get_mouse_pointer_position(win, true);
     i := (cast(int) (mouse_x / sq_width) + render_i) & (M-1);
     j := (cast(int) ((height - mouse_y) / sq_width) + render_j) & (M-1);
-    if i > 0 && i < M && j >= 0 && j < M then
+    if i >= 0 && i < M && j >= 0 && j < M then
       gol_grid[i][j] ^= 1;
   }
 
