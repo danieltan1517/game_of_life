@@ -6,10 +6,6 @@ main :: () {
   setup_getrect_theme(.Grayscale);
   dt := 0.01;
   timer := 0.0;
-  gol_grid[4][3] = 1;
-  gol_grid[4][4] = 1;
-  gol_grid[4][5] = 1;
-
   while eventloop := true {
     Input.update_window_events();
     for Input.get_window_resizes() {
@@ -67,7 +63,7 @@ main :: () {
 #scope_file
 play := false;
 
-M :: 64;
+M :: 128;
 #assert((M & (M-1)) == 0);
 gol_grid: [M][M] s8;
 
@@ -125,17 +121,9 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
   clear_render_target(.35, .35, .35, 1);
   defer swap_buffers(win);
   width, height := get_render_dimensions(win);
-  if mouse_pressed then {
-    mouse_x, mouse_y := get_mouse_pointer_position(win, true);
-    i := (cast(int) (mouse_x / sq_width) + render_i) & (M-1);
-    j := (cast(int) ((height - mouse_y) / sq_width) + render_j) & (M-1);
-    if i >= 0 && i < M && j >= 0 && j < M then
-      gol_grid[i][j] ^= 1;
-  }
 
   set_shader_for_color();
 
-  // gol_grid: [8][8] s8;
   i := render_i;
   j := render_j;
   cycles_x := 0;
@@ -166,45 +154,58 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
 
   ui_per_frame_update(win, width, height, current_time);
 
+  ui_interaction := false;
   k := clamp(height * .05, 17.0, 30.0);
   r := get_rect(5, (xx height) - 5.0 - k, 8.5*k, k);
   play_text := ifx play == true "Stop" else "Simulate";
   if button(r, play_text) {
     play = !play;
+    ui_interaction = true;
   }
 
   r.y -= k + 5.0;
 
   if button(r, "Next") {
     next_generation();
+    ui_interaction = true;
   }
 
   r.y -= k + 5.0;
 
   if button(r, "Zoom In") {
     sq_width = min(sq_width+1.0, xx min(width, height));
+    ui_interaction = true;
   }
 
   r.y -= k + 5.0;
 
   if button(r, "Zoom Out") {
     sq_width = max(sq_width-1.0, 1.0);
+    ui_interaction = true;
   }
 
   r.y -= k + 5.0;
 
   if button(r, "Clear") {
     memset(gol_grid.data, 0, size_of(#type [M][M] s8));
+    ui_interaction = true;
   }
 
   r.y -= k + 5.0;
 
-  slider(r, *max_time, 0.01, 3.0, 0.01, *getrect_theme.slider_theme, "Update ", " secs");
+  if slider(r, *max_time, 0.01, 3.0, 0.01, *getrect_theme.slider_theme, "Update ", " secs") {
+    ui_interaction = true;
+  }
 
   r.y -= k + 5.0;
 
   choice := color_option_choice;
-  dropdown(r, color_options, *choice);
+  dropdown_state := dropdown(r, color_options, *choice);
+  if (prev_open == true && dropdown_state.open == false) || (dropdown_state.open == true) {
+    ui_interaction = true;
+  }
+  prev_open = dropdown_state.open;
+
   defer {
     draw_popups();
     if choice != color_option_choice {
@@ -218,8 +219,18 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
       } else if color_option_choice == 3 {
         color_theme = Vector4.{.25,.25,1,1};
       }
+    } 
+  }
+
+  if ui_interaction == false && mouse_pressed then {
+    mouse_x, mouse_y := get_mouse_pointer_position(win, true);
+    i := (cast(int) (mouse_x / sq_width) + render_i) & (M-1);
+    j := (cast(int) ((height - mouse_y) / sq_width) + render_j) & (M-1);
+    if i >= 0 && i < M && j >= 0 && j < M then {
+      gol_grid[i][j] ^= 1;
     }
   }
+
   color_options :: string.[
     "yellow",
     "green",
@@ -234,7 +245,7 @@ color_option_choice: s32;
 max_time: float = 1.0;
 getrect_theme: Overall_Theme; 
 color_theme := Vector4.{1,1,0,1};
-
+prev_open: bool = false;
 
 setup_getrect_theme :: (theme: Default_Themes) #expand {
   proc := default_theme_procs[theme];
