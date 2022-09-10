@@ -12,11 +12,19 @@ With these rules in mind, the cells can make interesting, chaotic, and aesthetic
 
 ### Controls
 Click on a grid square to toggle the square on or off.
+
 Click `Simulate` to simulate the Game of Life board. Click `Stop` to stop the simulation.
+
 Click `Next` to go to the next generation.
+
 Click `Zoom In` to zoom in.
+
 Click `Zoom Out` to zoom out.
+
 Click `Clear` to clear the board to zero.
+
 Slide the slider back and forth to change the simulation speed.
+
 Change the color of live cells with the combo box.
+
 Use the arrow keys to move the camera up, down, left, or right.
