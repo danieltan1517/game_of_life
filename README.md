@@ -1,5 +1,9 @@
 This is an didactic implementation of John Conway's Game of Life in Jai. The algorithm is meant to be a demonstrate a simple Game of Life implementation. For the sake of code simplicity, this code assumes that the dimensions of the grid will always be a power of 2 (e.g. 2x2, 4x4, 8x8, 16x16, 32x32, 64x64, etc.). The code implements a torus Game of Life, meaning that as soon as the grid hits the edge, it wraps around to the other side. 
 
+
+[Game of Life in Jai YouTube Demo Video](https://www.youtube.com/watch?v=wJJ6XU2Fv1w)
+
+
 ### On John Conway's Game of Life
 John Conway's Game of Life is a cellular automaton created by British mathematican John Conway. The Game of Life is a grid of cells. For each cell, each cell has the following properties:
 * Any live cell with fewer than two live neighbours dies, as if by underpopulation.
