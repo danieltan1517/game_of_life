@@ -118,7 +118,7 @@ sq_width := 35.0;
 
 render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #expand {
   // background.
-  clear_render_target(.35, .35, .35, 1);
+  clear_render_target(.15, .15, .15, 1);
   defer swap_buffers(win);
   width, height := get_render_dimensions(win);
 
@@ -132,7 +132,23 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
   fwidth: float = xx width;
   fheight: float = xx height;
   offset := sq_width * 0.025;
-  dark := Vector4.{.15, .15, .15, 1};
+  line_color := Vector4.{.35, .35, .35, 1};
+
+  line_width := clamp(sq_width/30.0, .55, 1.0);
+  // draw the vertical grid lines.
+  while sq_x < fwidth {
+    immediate_quad(sq_x, sq_y, sq_x + line_width, 0, line_color);
+    sq_x += sq_width;
+  }
+
+  // draw the vertical grid lines.
+  while sq_y > 0 {
+    immediate_quad(0, sq_y, fwidth, sq_y + line_width, line_color);
+    sq_y -= sq_width;
+  }
+
+  sq_x = 0.0;
+  sq_y = xx height;
   while sq_x < fwidth && cycles_x < M {
     sq_y = fheight;
     j = render_j;
@@ -140,9 +156,7 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
     while sq_y > 0 && cycles_y < M {
       if gol_grid[i][j] == 1 {
         immediate_quad(sq_x + offset, sq_y - offset, sq_x + sq_width - offset, sq_y - sq_width + offset, color_theme);
-      } else {
-        immediate_quad(sq_x + offset, sq_y - offset, sq_x + sq_width - offset, sq_y - sq_width + offset, dark);
-      }
+      } 
       sq_y -= sq_width;
       j = (j + 1) & (M-1);
       cycles_y += 1;
