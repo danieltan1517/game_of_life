@@ -60,6 +60,13 @@ main :: () {
   }
 }
 
+color_options :: string.[
+  "yellow",
+  "green",
+  "red",
+  "blue"
+];
+
 #scope_file
 play := false;
 
@@ -68,6 +75,21 @@ M :: 128;
 gol_grid: [M][M] s8;
 
 next_generation :: () {
+  neighbors_count :: (i: int, j: int) -> s8 #expand {
+    count: s8 = 0;
+    count += gol_grid[wrap(i-1)][wrap(j-1)];
+    count += gol_grid[wrap(i-1)][j];
+    count += gol_grid[wrap(i-1)][wrap(j+1)];
+
+    count += gol_grid[i][wrap(j-1)];
+    count += gol_grid[i][wrap(j+1)];
+
+    count += gol_grid[wrap(i+1)][wrap(j-1)];
+    count += gol_grid[wrap(i+1)][j];
+    count += gol_grid[wrap(i+1)][wrap(j+1)];
+    return count;
+  }
+
   temp: [M][M] s8 = ---;
   for i: 0..M-1 {
     for j: 0..M-1 {
@@ -92,20 +114,6 @@ next_generation :: () {
     }
   }
 
-  neighbors_count :: (i: int, j: int) -> s8 #expand {
-    count: s8 = 0;
-    count += gol_grid[wrap(i-1)][wrap(j-1)];
-    count += gol_grid[wrap(i-1)][j];
-    count += gol_grid[wrap(i-1)][wrap(j+1)];
-
-    count += gol_grid[i][wrap(j-1)];
-    count += gol_grid[i][wrap(j+1)];
-
-    count += gol_grid[wrap(i+1)][wrap(j-1)];
-    count += gol_grid[wrap(i+1)][j];
-    count += gol_grid[wrap(i+1)][wrap(j+1)];
-    return count;
-  }
 }
 
 wrap :: (index: int) -> int #expand {
@@ -244,14 +252,6 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
       gol_grid[i][j] ^= 1;
     }
   }
-
-  color_options :: string.[
-    "yellow",
-    "green",
-    "red",
-    "blue"
-  ];
-  
 
 }
 
