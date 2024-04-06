@@ -48,7 +48,7 @@ main :: () {
       timer = 0.0;
     }
 
-    current_time := get_time();
+    current_time := seconds_since_init();
     render_gol(win, current_time, mouse_pressed);
     sleep_milliseconds(10);
 
