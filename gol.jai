@@ -222,7 +222,7 @@ render_gol :: (win: Window_Type, current_time: float64, mouse_pressed: bool) #ex
   r.y -= k + 5.0;
 
   choice := color_option_choice;
-  dropdown_state := dropdown(r, color_options, *choice);
+  changed, dropdown_state := dropdown(r, color_options, *choice);
   if (prev_open == true && dropdown_state.open == false) || (dropdown_state.open == true) {
     ui_interaction = true;
   }
